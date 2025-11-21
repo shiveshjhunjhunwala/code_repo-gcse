@@ -21,7 +21,11 @@ def main_menu():
     return choice_user
     
 def view_available_pets(choice,pets_df):
-    print(pets_df)
+    temp_pets_df = pets_df
+    temp_pets_df = temp_pets_df.sort_values(by="DaysInCentre", ascending = False)
+    temp_pets_df = temp_pets_df[temp_pets_df["Status"] == "Available"]
+    print("")
+    print(temp_pets_df)
     #print(f"inside veiw_available_pets {choice}")
 
 def registration():
@@ -52,18 +56,15 @@ def main():
     pets_df = pets_csv()
     adopters_df = adopters_csv()
     choice = main_menu()
-    if choice == '1':    
-        view_available_pets(1, pets_df)
-    #print(f"inside main {choice}")
-    if choice == '2':
-        registration()
-    if choice == '3':
-        adopter_login(adopters_df)
-    if choice == '4':
-        staff_menu()
-    if choice == '5':
-        pass  
-
-    
+    while choice!= 5:
+        if choice == '1':    
+            view_available_pets(1, pets_df)
+        #print(f"inside main {choice}")
+        if choice == '2':
+            registration()
+        if choice == '3':
+            adopter_login(adopters_df)
+        if choice == '4':
+            staff_menu()
     
 main()
