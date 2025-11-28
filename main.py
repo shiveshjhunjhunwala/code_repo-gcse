@@ -28,17 +28,51 @@ def view_available_pets(choice,pets_df):
     print(temp_pets_df)
     #print(f"inside veiw_available_pets {choice}")
 
-def registration(adopters_df):
+def registration(adopters_df, csv_path="adopters.csv"):
     name = input("full name (must be at least 2 words)")
     home_type =  input("Home type (Flat, House, or Farm only)")
     experience = input("Experience level (None, Some, or Expert)")
     pet_size = input("Preferred pet size (Small, Medium, Large, or Any)")
     energy_level = input("Preferred energy level (Low, Medium, High, or Any)")
-    if len(name.split(" ")) > 0 and home_type in ['flat', 'house', 'farm'] and  experience in ['none', 'some', 'expert'] and pet_size in ['small', 'medium', 'large', 'any'] and energy_level in ['low' , 'medium' , 'high' , 'any']:
-        
+    if len(name.split(" ")) >=2 and home_type in ['flat', 'house', 'farm'] and  experience in ['none', 'some', 'expert'] and pet_size in ['small', 'medium', 'large', 'any'] and energy_level in ['low' , 'medium' , 'high' , 'any']:
+          if len(adopters_df) == 0:
+            new_id = 1
+    if (
+        len(name.split()) >= 2
+        and home_type in ['flat', 'house', 'farm']
+        and experience in ['none', 'some', 'expert']
+        and pet_size in ['small', 'medium', 'large', 'any']
+        and energy_level in ['low', 'medium', 'high', 'any']
+    ):
+
+   
+        if len(adopters_df) == 0:
+            new_id = 1
+        else:
+            new_id = adopters_df[adopters_df['AdopterID']].max() + 1
+            print(new_id)
+
+    
+        new_row = {
+            "adopter_id": new_id,
+            "name": name,
+            "home_type": home_type,
+            "experience": experience,
+            "pet_size": pet_size,
+            "energy_level": energy_level
+        }
+
+
+        adopters_df = pd.concat([adopters_df, pd.DataFrame([new_row])], ignore_index=True)
+
+        adopters_df.to_csv(csv_path, index=False)
+
+        print("Registration successful! New adopter ID:", new_id)
+        return adopters_df
+
     else:
-        print('false')
-         
+        print("Invalid input. Registration failed.")
+        return adopters_df
 
 
 
@@ -62,15 +96,19 @@ def main():
     pets_df = pets_csv()
     adopters_df = adopters_csv()
     choice = main_menu()
+
     if choice == '1':    
         view_available_pets(1, pets_df)
-        #print(f"inside main {choice}")
+
     if choice == '2':
-        registration()
+        adopters_df = registration(adopters_df, "adopters.csv")
+
     if choice == '3':
         adopter_login(adopters_df)
+
     if choice == '4':
         staff_menu()
+
     if choice == '5':
         print("Stopping program...")
         quit()
