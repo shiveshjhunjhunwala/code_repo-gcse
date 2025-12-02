@@ -1,7 +1,9 @@
-AdopterID,Name,HomeType,Experience,PreferredSize,PreferredEnergy,AdoptedPets
-A001,Sarah Jones,House,Some,Medium,Medium,P010
-A002,Tom Brown,Flat,None,Small,Low,P002
-A003,Emma Davis,Farm,Expert,Any,Any,P005;P015
-A004,Michael Wilson,House,Some,Large,High,None
-A005,Lisa Anderson,Flat,None,Small,Low,None
-A006,David Thompson,Farm,Expert,Large,Medium,P004
+AdopterID,Name,HomeType,Experience,PreferredSize,PreferredEnergy,AdoptedPets,PetSize,EnergyLevel
+A001,Sarah Jones,House,Some,Medium,Medium,P010,,
+A002,Tom Brown,Flat,,Small,Low,P002,,
+A003,Emma Davis,Farm,Expert,Any,Any,P005;P015,,
+A004,Michael Wilson,House,Some,Large,High,,,
+A005,Lisa Anderson,Flat,,Small,Low,,,
+A006,David Thompson,Farm,Expert,Large,Medium,P004,,
+A007,sh jh,flat,none,,,,small,low
+A008,sh jh,flat,none,,,,any,any

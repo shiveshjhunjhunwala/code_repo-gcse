@@ -27,52 +27,46 @@ def view_available_pets(choice,pets_df):
     print("")
     print(temp_pets_df)
     #print(f"inside veiw_available_pets {choice}")
-
 def registration(adopters_df, csv_path="adopters.csv"):
-    name = input("full name (must be at least 2 words)")
-    home_type =  input("Home type (Flat, House, or Farm only)")
-    experience = input("Experience level (None, Some, or Expert)")
-    pet_size = input("Preferred pet size (Small, Medium, Large, or Any)")
-    energy_level = input("Preferred energy level (Low, Medium, High, or Any)")
-    if len(name.split(" ")) >=2 and home_type in ['flat', 'house', 'farm'] and  experience in ['none', 'some', 'expert'] and pet_size in ['small', 'medium', 'large', 'any'] and energy_level in ['low' , 'medium' , 'high' , 'any']:
-          if len(adopters_df) == 0:
-            new_id = 1
-    if (
-        len(name.split()) >= 2
-        and home_type in ['flat', 'house', 'farm']
-        and experience in ['none', 'some', 'expert']
-        and pet_size in ['small', 'medium', 'large', 'any']
-        and energy_level in ['low', 'medium', 'high', 'any']
+    name = input("Full name (at least 2 words): ").strip()
+    home_type = input("Home type (Flat, House, Farm): ").strip().lower()
+    experience = input("Experience (None, Some, Expert): ").strip().lower()
+    pet_size = input("Preferred pet size (Small, Medium, Large, Any): ").strip().lower()
+    energy_level = input("Preferred energy level (Low, Medium, High, Any): ").strip().lower()
+
+    if not (
+        len(name.split()) >= 2 and
+        home_type in ['flat', 'house', 'farm'] and
+        experience in ['none', 'some', 'expert'] and
+        pet_size in ['small', 'medium', 'large', 'any'] and
+        energy_level in ['low', 'medium', 'high', 'any']
     ):
-
-   
-        if len(adopters_df) == 0:
-            new_id = 1
-        else:
-            new_id = adopters_df[adopters_df['AdopterID']].max() + 1
-            print(new_id)
-
-    
-        new_row = {
-            "adopter_id": new_id,
-            "name": name,
-            "home_type": home_type,
-            "experience": experience,
-            "pet_size": pet_size,
-            "energy_level": energy_level
-        }
-
-
-        adopters_df = pd.concat([adopters_df, pd.DataFrame([new_row])], ignore_index=True)
-
-        adopters_df.to_csv(csv_path, index=False)
-
-        print("Registration successful! New adopter ID:", new_id)
+        print("error.")
         return adopters_df
 
+    if adopters_df.empty:
+        new_no = 1
     else:
-        print("Invalid input. Registration failed.")
-        return adopters_df
+        last_id = adopters_df["AdopterID"].str[1:].astype(int).max()
+        new_no = last_id + 1
+
+    new_id = "A" + str(new_no).zfill(3)
+
+    new_row = {
+        "AdopterID": new_id,
+        "Name": name,
+        "HomeType": home_type,
+        "Experience": experience,
+        "PetSize": pet_size,
+        "EnergyLevel": energy_level
+    }
+
+    adopters_df = pd.concat([adopters_df, pd.DataFrame([new_row])], ignore_index=True)
+    adopters_df.to_csv(csv_path, index=False)
+
+    print("you are now registered in! Your ID is:", new_id)
+    return adopters_df
+
 
 
 
