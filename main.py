@@ -26,7 +26,10 @@ def view_available_pets(choice,pets_df):
     temp_pets_df = temp_pets_df[temp_pets_df["Status"] == "Available"]
     print("")
     print(temp_pets_df)
+    print("the average days is: ", temp_pets_df["DaysInCentre"].sum()/len(temp_pets_df["DaysInCentre"]))
+    
     #print(f"inside veiw_available_pets {choice}")
+
 def registration(adopters_df, csv_path="adopters.csv"):
     name = input("Full name (at least 2 words): ").strip()
     home_type = input("Home type (Flat, House, Farm): ").strip().lower()
@@ -73,7 +76,7 @@ def registration(adopters_df, csv_path="adopters.csv"):
 def adopter_login(adopters_df):
     user_ID = input("ID must be exactly 4 characters (letter A + 3 digits)")
     if user_ID in set(adopters_df["AdopterID"]):
-        print("found")
+        print("Nice! You are now logged in: ", adopter_menu())
     else:
         print("ERROR")
         print(main_menu())
@@ -84,6 +87,22 @@ def staff_menu():
     staff_password = input("what is your password: ")
     if staff_password == password:
         print("staff options")
+
+def adopter_menu():
+    choice = input("where do you want to access: ")
+    if choice == '1':    
+        print("View My Compatibility Matches: ")
+
+    if choice == '2':
+        print('Reserve a Pet')
+
+    if choice == '3':
+        print("View My Reserved/Adopted Pets")
+
+    if choice == '4':
+        print("Logout")
+    
+
     
 
 def main():
@@ -104,6 +123,9 @@ def main():
         staff_menu()
 
     if choice == '5':
+        adopter_menu()
+
+    if choice == '6':
         print("Stopping program...")
         quit()
     
