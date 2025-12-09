@@ -81,12 +81,87 @@ def adopter_login(adopters_df):
         print("ERROR")
         print(main_menu())
 
-def staff_menu():
+def staff_menu(pets_df, csv_path="pets.csv"):
     password = "pawsadopt2024"
-    count = 3
+    count = 4
     staff_password = input("what is your password: ")
     if staff_password == password:
         print("staff options")
+    else:
+        count -=1
+        second_attempt = input("what is your password: ")
+        if second_attempt == password:
+            print("staff options")
+        else:
+            third_attempt = input("Last attempt: what is the password: ")
+            count -= 1
+            if third_attempt == password:
+                print("staff options")
+            else:
+                print("you have been sent to main menu again", main())
+    if count == 0:
+        print(main())
+    if staff_password or second_attempt or third_attempt == password:
+            print("1. Add New Pet")
+            print("2.Complete an Adoption")
+            print("3.View All Pets (including adopted)")
+            print("4.View Statistics")
+            print("5. Remove a Pet")
+            print("6. Logout")
+            choice = input("where do you want to access: ")
+            if choice == 1:
+                name = input("Pet name (at least 2 words): ").strip()
+                pet_type = input("Home type (Flat, House, Farm): ").strip().lower()
+                age = input("What is the age: ").strip().lower()
+                pet_size = input("Preferred pet size (Small, Medium, Large, Any): ").strip().lower()
+                energy_level = input("Preferred energy level (Low, Medium, High, Any): ").strip().lower()
+                fee = input("What is the price: ").strip().lower()
+
+            if not (
+                len(name.split()) >= 2 and
+                pet_type in ['flat', 'house', 'farm'] and
+                age in ['none', 'some', 'expert'] and
+                pet_size in ['small', 'medium', 'large', 'any'] and
+                energy_level in ['low', 'medium', 'high', 'any']
+            ):
+                print("error.")
+                return pets_df
+
+            if pets_df.empty:
+                new_no = 1
+            else:
+                last_id = pets_df["AdopterID"].str[1:].astype(int).max()
+                new_no = last_id + 1
+
+            new_id = "A" + str(new_no).zfill(3)
+
+            new_row = {
+                "PetID": new_id,
+                "Name": name,
+                "Type": pet_type,
+                "Age": age,
+                "Size": pet_size,
+                "Energy": energy_level,
+                "Fee": fee,
+            }
+
+            pets_df = pd.concat([pets_df, pd.DataFrame([new_row])], ignore_index=True)
+            pets_df.to_csv(csv_path, index=False)
+
+            if choice == 2:
+                pass
+            if choice == 3:
+                pass
+            if choice == 4:
+                pass
+            if choice == 5:
+                pass
+            if choice == 6:
+                pass
+
+
+
+        
 
 def adopter_menu():
     choice = input("where do you want to access: ")
@@ -123,9 +198,6 @@ def main():
         staff_menu()
 
     if choice == '5':
-        adopter_menu()
-
-    if choice == '6':
         print("Stopping program...")
         quit()
     
