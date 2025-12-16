@@ -13,7 +13,7 @@ def main():
             adopters_df = code.registration(adopters_df, "adopters.csv")
 
         if choice == '3':
-            code.adopter_login(adopters_df)
+            code.adopter_login(adopters_df,pets_df)
 
         if choice == '4':
             code.staff_menu(pets_df, csv_path="pets.csv")

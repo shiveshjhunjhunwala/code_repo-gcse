@@ -73,10 +73,11 @@ def registration(adopters_df, csv_path="adopters.csv"):
 
 
 
-def adopter_login(adopters_df):
+def adopter_login(adopters_df,pets_df):
     user_ID = input("ID must be exactly 4 characters (letter A + 3 digits)")
     if user_ID in set(adopters_df["AdopterID"]):
-        print("Nice! You are now logged in: ", adopter_menu())
+        print("YOU CAN NOW ACCESS ADOPTER PAGE")
+        print(adopter_menu(,adopters_df, pets_df, user_ID))
     else:
         print("ERROR")
         print(main_menu())
@@ -86,24 +87,27 @@ def staff_menu(pets_df, csv_path="pets.csv"):
     count = 4
     staff_password = input("what is your password: ")
     if staff_password == password:
-        print("staff options")
+        print("STAFF OPTIONS")
+        print(staff_actual_menu())
     else:
         count -=1
         second_attempt = input("what is your password: ")
         if second_attempt == password:
-            print("staff options")
+            print("STAFF OPTIONS")
+            print(staff_actual_menu())
         else:
             third_attempt = input("Last attempt: what is the password: ")
             count -= 1
             if third_attempt == password:
-                print("staff options")
+                print("STAFF OPTIONS")
+                print(staff_actual_menu())
             else:
                 print("you have been sent to main menu again")
                 return
     if count == 0:
         #print(main())
         return 
-    if staff_password or second_attempt or third_attempt == password:
+def staff_actual_menu():
             print("1. Add New Pet")
             print("2.Complete an Adoption")
             print("3.View All Pets (including adopted)")
@@ -111,54 +115,76 @@ def staff_menu(pets_df, csv_path="pets.csv"):
             print("5. Remove a Pet")
             print("6. Logout")
             choice = input("where do you want to access: ")
-            if choice == 1:
-                name = input("Pet name (at least 2 words): ").strip()
-                pet_type = input("Home type (Flat, House, Farm): ").strip().lower()
-                age = input("What is the age: ").strip().lower()
-                pet_size = input("Preferred pet size (Small, Medium, Large, Any): ").strip().lower()
-                energy_level = input("Preferred energy level (Low, Medium, High, Any): ").strip().lower()
-                fee = input("What is the price: ").strip().lower()
+            if choice == "1":
+                name = input("Pet name: ").strip()
+                pet_type = input("Pet type (Dog, Cat, Rabbit, Hamster): ").strip().title()
+                age_input = input("Age (0-20): ").strip()
+                size = input("Size (Small, Medium, Large): ").strip().title()
+                energy = input("Energy level (Low, Medium, High): ").strip().title()
+                fee_input = input("Adoption fee (£20-£300): ").strip()
+                if name == "":
+                    print("Error")
+                    return
+                if pet_type not in ["Dog", "Cat", "Rabbit", "Hamster"]:
+                    print("Error")
+                    return
+                if not age_input.isdigit():
+                    print("Error")
+                    return
+                age = int(age_input)
+                if age < 0 or age > 20:
+                    print("Error")
+                    return
+                if size not in ["Small", "Medium", "Large"]:
+                    print("Error")
+                    return
+                if energy not in ["Low", "Medium", "High"]:
+                    print("Error")
+                    return
+                if not fee_input.isdigit():
+                    print("Error")
+                    return
+                fee = int(fee_input)
+                if fee < 20 or fee > 300:
+                    print("Error")
+                    return
+                pets = []
+                with open("Pets.csv", "r") as file:
+                    reader = pets.csv.reader(file)
+                    for row in reader:
+                        pets.append(row)
 
-            if not (
-                len(name.split(' ')) >= 2 and
-                pet_type in ['flat', 'house', 'farm'] and
-                age in ['none', 'some', 'expert'] and
-                pet_size in ['small', 'medium', 'large', 'any'] and
-                energy_level in ['low', 'medium', 'high', 'any']
-            ):
-                print("error")
-                return 
+                if len(pets) <= 1:
+                    new_no = 1
+                else:
+                    last_id = pets[-1][0]
+                    number = int(last_id[1:])
+                    new_no = number + 1
 
-            if pets_df.empty:                                   
-                new_no = 1
-            else:
-                last_id = pets_df["PetID"].str[1:].astype(int).max()
-                new_no = last_id + 1
+                pet_id = "P" + str(new_no).zfill(3)
 
-            new_id = "P" + str(new_no).zfill(3)
+                new_pet = [
+                    pet_id,
+                    name,
+                    pet_type,
+                    str(age),
+                    size,
+                    energy,
+                    str(fee),
+                    "Available",
+                    "0"
+                ]
 
-            new_row = {
-                "PetID": new_id,
-                "Name": name,
-                "Type": pet_type,
-                "Age": age,
-                "Size": pet_size,
-                "Energy": energy_level,
-                "Fee": fee,
-            }
-
-            pets_df = pd.concat([pets_df, pd.DataFrame([new_row])], ignore_index=True)
-            pets_df.to_csv(csv_path, index=False)
-
-            if choice == 2:
+                pets.append(new_pet)
+            if choice == "2":
                 pass
-            if choice == 3:
+            if choice == "3":
                 pass
-            if choice == 4:
+            if choice == "4":
                 pass
-            if choice == 5:
+            if choice == "5":
                 pass
-            if choice == 6:
+            if choice == "6":
                 print("logging out...")
                 quit()
 
@@ -166,11 +192,66 @@ def staff_menu(pets_df, csv_path="pets.csv"):
 
         
 
-def adopter_menu():
+def adopter_menu(pets_df,user_ID):
+    print("1. View My Compatibility Matches")
+    print("2.Reserve a Pet")
+    print("3.View My Reserved/Adopted Pets")
+    print("4.Cancel a Reservation")
+    print("5. Logout")
+    
     choice = input("where do you want to access: ")
     if choice == '1':    
-        print("View My Compatibility Matches: ")
-
+            pets_df=pets_df[pets_df['Status']=='Available']
+    score=0
+    df_adopter = df_adopter[df_adopter["AdopterID"]== user_ID]
+    home_type=df_adopter.iloc[0]["HomeType"]
+    size=df_adopter.iloc[0]["PreferredSize"]
+    prefered_energy=df_adopter.iloc[0]["PreferredEnergy"]
+    adopter_experience = df_adopter.iloc[0]["Experience"]
+    pet_energy = pets_df.iloc[0]["Energy"]
+    pet_age = pets_df.iloc [0]["Age"]
+    rating=0
+    print("Home is ", home_type)
+    print("Prefered size", size)
+    print("Energy",prefered_energy)
+    df_with_score=pd.DataFrame(columns=['PetID', 'Score', 'Rating'])
+    for i, r in pets_df.iterrows():
+        score=0
+        if r["Type"]=="Dog" and r["Size"]=="Large" and home_type=="Flat":
+            score=score-20
+        if r["Type"]=="Dog" and home_type=="Farm":
+            score=score+15
+        if (r["Type"]=="Rabbit" or r["Type"]=="Cat" or r["Type"]=="Hamster") and home_type=="Flat":
+            score=score+10       
+        if size==r["Size"]:
+            score=score+20
+        if size=="Any":
+            score=score+10        
+        if r["Energy"]==prefered_energy:
+            score=score+20
+        if prefered_energy=="Any":
+            score=score+10
+        if adopter_experience == "Expert":
+            score = score + 15
+        if adopter_experience == "Some":
+            score = score + 10
+        elif pet_energy == "High" and adopter_experience == "None":
+            score = score - 15 
+        if pet_age >= 6:
+            score = score + 10
+        if(score >=50):
+            rating= "Excellent Match! 3 stars"
+        if(score>=30 and score<50) :
+            rating= "Good Match! 2 stars"
+        if(score>=10 and score<30):
+            rating= "Possible Match! 1 star"
+        if(score<10):
+            rating= "Not recommended! 0 star"
+        global filter_df
+        df_with_score.loc[i]=[r["PetID"], score, rating]
+        filter_df = df_with_score.sort_values("Score", ascending = False)
+    print("Now showing scores:") 
+    print(filter_df)
     if choice == '2':
         print('Reserve a Pet')
 
@@ -178,7 +259,10 @@ def adopter_menu():
         print("View My Reserved/Adopted Pets")
 
     if choice == '4':
-        print("Logout")
+        print("Cancel a reservation")
+    if choice == '5':
+        print("logout")
+
     
 
     
